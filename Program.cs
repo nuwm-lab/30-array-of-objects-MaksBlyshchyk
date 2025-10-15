@@ -78,7 +78,7 @@ class Program
             );
         }
 
-        // Знаходження найбільшого периметра
+        // Знаходження найбільшого периметра.
         double maxPerimeter = 0;
         int maxIndex = 0;
 

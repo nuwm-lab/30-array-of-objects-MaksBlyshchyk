@@ -215,7 +215,7 @@ namespace ConvexQuadrilateralsApp
             return (A.X - O.X) * (B.Y - O.Y) - (A.Y - O.Y) * (B.X - O.X);
         }
 
-        // площа полігону через формулу Гауса (може бути додатною/від'ємною залежно від орієнтації)
+        // площа полігону через формулу Гауса (може бути додатною/від'ємною залежно від орієнтації).
         static double PolygonArea(IList<Point> pts)
         {
             double s = 0;

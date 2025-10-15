@@ -51,12 +51,25 @@ class Program
 {
     static void Main()
     {
+    }
+
+    public void Print()
+    {
+        Console.WriteLine($"A({A.X}, {A.Y}), B({B.X}, {B.Y}), C({C.X}, {C.Y}), D({D.X}, {D.Y})");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
         Console.Write("Введіть кількість чотирикутників n: ");
         int n = int.Parse(Console.ReadLine());
 
         ConvexQuadrilateral[] quads = new ConvexQuadrilateral[n];
 
         // Введення координат.
+        // Введення координат
         for (int i = 0; i < n; i++)
         {
             Console.WriteLine($"\nВведіть координати для чотирикутника №{i + 1}:");

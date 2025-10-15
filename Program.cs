@@ -11,7 +11,70 @@ namespace ConvexQuadrilateralsApp
         public double Y { get; }
         public Point(double x, double y) { X = x; Y = y; }
 
+<<<<<<< HEAD
         public double DistanceTo(Point p)
+=======
+    // Відстань між двома точками
+    public double DistanceTo(Point p)
+    {
+        double dx = X - p.X;
+        double dy = Y - p.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+    }
+}
+
+class ConvexQuadrilateral
+{
+    public Point A { get; }
+    public Point B { get; }
+    public Point C { get; }
+    public Point D { get; }
+
+    public ConvexQuadrilateral(Point a, Point b, Point c, Point d)
+    {
+        A = a;
+        B = b;
+        C = c;
+        D = d;
+    }
+
+    // Обчислення периметра
+    public double Perimeter()
+    {
+        return A.DistanceTo(B) + B.DistanceTo(C) + C.DistanceTo(D) + D.DistanceTo(A);
+    }
+
+    public void Print()
+    {
+        Console.WriteLine($"A({A.X}, {A.Y}), B({B.X}, {B.Y}), C({C.X}, {C.Y}), D({D.X}, {D.Y})");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+    }
+
+    public void Print()
+    {
+        Console.WriteLine($"A({A.X}, {A.Y}), B({B.X}, {B.Y}), C({C.X}, {C.Y}), D({D.X}, {D.Y})");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Введіть кількість чотирикутників n: ");
+        int n = int.Parse(Console.ReadLine());
+
+        ConvexQuadrilateral[] quads = new ConvexQuadrilateral[n];
+
+        // Введення координат.
+        // Введення координат
+        for (int i = 0; i < n; i++)
+>>>>>>> 3ad872c2dbee6b47153753cf5fb824a6b69ede9c
         {
             double dx = X - p.X;
             double dy = Y - p.Y;

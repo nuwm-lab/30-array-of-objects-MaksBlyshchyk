@@ -22,3 +22,4 @@ jobs:
           GOOGLE_SPREADSHEET_URL: ${{ secrets.GOOGLE_SPREADSHEET_URL }}
           GOOGLE_SHEETS_NAMING: ${{ secrets.GOOGLE_SHEETS_NAMING }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

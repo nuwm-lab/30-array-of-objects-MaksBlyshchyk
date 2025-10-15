@@ -23,7 +23,7 @@ namespace ConvexQuadrilateralsApp
 
     public class ConvexQuadrilateral
     {
-        // vertices ordered counter-clockwise
+        // vertices ordered counter-clockwise,
         public IReadOnlyList<Point> Vertices { get; }
 
         public ConvexQuadrilateral(IEnumerable<Point> vertices)

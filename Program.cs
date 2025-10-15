@@ -56,7 +56,7 @@ class Program
 
         ConvexQuadrilateral[] quads = new ConvexQuadrilateral[n];
 
-        // Введення координат
+        // Введення координат.
         for (int i = 0; i < n; i++)
         {
             Console.WriteLine($"\nВведіть координати для чотирикутника №{i + 1}:");

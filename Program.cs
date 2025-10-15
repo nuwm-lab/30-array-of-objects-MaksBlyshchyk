@@ -1,294 +1,219 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Collections.Generic;
 
-namespace ConvexQuadrilateralsApp
+namespace ConvexQuadrilaterals
 {
-    public class Point
+    public struct Point
     {
         public double X { get; }
         public double Y { get; }
-        public Point(double x, double y) { X = x; Y = y; }
 
-<<<<<<< HEAD
-        public double DistanceTo(Point p)
-=======
-    // Відстань між двома точками
-    public double DistanceTo(Point p)
-    {
-        double dx = X - p.X;
-        double dy = Y - p.Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
-}
-
-class ConvexQuadrilateral
-{
-    public Point A { get; }
-    public Point B { get; }
-    public Point C { get; }
-    public Point D { get; }
-
-    public ConvexQuadrilateral(Point a, Point b, Point c, Point d)
-    {
-        A = a;
-        B = b;
-        C = c;
-        D = d;
-    }
-
-    // Обчислення периметра
-    public double Perimeter()
-    {
-        return A.DistanceTo(B) + B.DistanceTo(C) + C.DistanceTo(D) + D.DistanceTo(A);
-    }
-
-    public void Print()
-    {
-        Console.WriteLine($"A({A.X}, {A.Y}), B({B.X}, {B.Y}), C({C.X}, {C.Y}), D({D.X}, {D.Y})");
-    }
-}
-
-class Program
-{
-    static void Main()
-    {
-    }
-
-    public void Print()
-    {
-        Console.WriteLine($"A({A.X}, {A.Y}), B({B.X}, {B.Y}), C({C.X}, {C.Y}), D({D.X}, {D.Y})");
-    }
-}
-
-class Program
-{
-    static void Main()
-    {
-        Console.Write("Введіть кількість чотирикутників n: ");
-        int n = int.Parse(Console.ReadLine());
-
-        ConvexQuadrilateral[] quads = new ConvexQuadrilateral[n];
-
-        // Введення координат.
-        // Введення координат
-        for (int i = 0; i < n; i++)
->>>>>>> 3ad872c2dbee6b47153753cf5fb824a6b69ede9c
+        public Point(double x, double y)
         {
-            double dx = X - p.X;
-            double dy = Y - p.Y;
+            X = x;
+            Y = y;
+        }
+
+        public double DistanceTo(Point other)
+        {
+            double dx = X - other.X;
+            double dy = Y - other.Y;
             return Math.Sqrt(dx * dx + dy * dy);
-        }
-
-        public override string ToString() => $"({X.ToString("G", CultureInfo.InvariantCulture)}, {Y.ToString("G", CultureInfo.InvariantCulture)})";
-    }
-
-    public class ConvexQuadrilateral
-    {
-        // vertices ordered counter-clockwise,
-        public IReadOnlyList<Point> Vertices { get; }
-
-        public ConvexQuadrilateral(IEnumerable<Point> vertices)
-        {
-            var v = vertices.ToList();
-            if (v.Count != 4) throw new ArgumentException("Потрібно 4 вершини.");
-            Vertices = v;
-        }
-
-        public double Perimeter()
-        {
-            double p = 0;
-            for (int i = 0; i < Vertices.Count; i++)
-            {
-                var a = Vertices[i];
-                var b = Vertices[(i + 1) % Vertices.Count];
-                p += a.DistanceTo(b);
-            }
-            return p;
         }
 
         public override string ToString()
         {
-            return string.Join(" ", Vertices.Select((pt, i) => $"{(char)('A' + i)}{pt}"));
+            return $"({X.ToString(CultureInfo.InvariantCulture)}, {Y.ToString(CultureInfo.InvariantCulture)})";
         }
     }
 
-    class Program
+    public class ConvexQuadrilateral
     {
-        const double EPS = 1e-9;
+        private readonly Point[] _vertices;
 
-        static void Main()
+        public Point[] Vertices => _vertices;
+        public double Perimeter { get; }
+
+        public ConvexQuadrilateral(Point[] vertices)
         {
-            Console.WriteLine("Програма: знайти опуклий чотирикутник з найбільшим периметром.");
-            int n = ReadPositiveInt("Введіть кількість чотирикутників n: ");
+            if (vertices == null || vertices.Length != 4)
+                throw new ArgumentException("Потрібно рівно 4 вершини.");
 
-            var quadrilaterals = new List<ConvexQuadrilateral>();
+            _vertices = OrderVerticesByAngle(vertices);
 
-            for (int i = 0; i < n; i++)
+            if (!IsConvex())
+                throw new ArgumentException("Вершини не утворюють опуклий чотирикутник або мають колінеарні точки.");
+
+            Perimeter = ComputePerimeter();
+        }
+
+        private static Point[] OrderVerticesByAngle(Point[] pts)
+        {
+            double cx = pts.Average(p => p.X);
+            double cy = pts.Average(p => p.Y);
+            return pts.OrderBy(p => Math.Atan2(p.Y - cy, p.X - cx)).ToArray();
+        }
+
+        private double ComputePerimeter()
+        {
+            double sum = 0;
+            for (int i = 0; i < 4; i++)
+                sum += _vertices[i].DistanceTo(_vertices[(i + 1) % 4]);
+            return sum;
+        }
+
+        private bool IsConvex()
+        {
+            double[] cross = new double[4];
+            for (int i = 0; i < 4; i++)
             {
-                Console.WriteLine($"\nЧотирикутник #{i + 1}:");
-                while (true)
-                {
-                    var pts = new List<Point>();
-                    bool failedInput = false;
+                Point a = _vertices[i];
+                Point b = _vertices[(i + 1) % 4];
+                Point c = _vertices[(i + 2) % 4];
 
-                    for (int v = 0; v < 4; v++)
-                    {
-                        Console.Write($"Точка {(char)('A' + v)} (формат: x y): ");
-                        string line = Console.ReadLine();
-                        if (!TryParsePoint(line, out Point p))
-                        {
-                            Console.WriteLine("Невірний формат точки. Введіть чотирикутник ще раз з початку.");
-                            failedInput = true;
-                            break;
-                        }
-                        pts.Add(p);
-                    }
+                double abx = b.X - a.X;
+                double aby = b.Y - a.Y;
+                double bcx = c.X - b.X;
+                double bcy = c.Y - b.Y;
 
-                    if (failedInput) continue;
-
-                    // Перевіримо дублікати вершин
-                    if (HasDuplicatePoints(pts))
-                    {
-                        Console.WriteLine("Деякі вершини співпадають. Введіть інші координати.");
-                        continue;
-                    }
-
-                    // Побудуємо випуклу оболонку з 4 точок (щоб врахувати порядок)
-                    var hull = ConvexHull(pts);
-                    if (hull.Count != 4)
-                    {
-                        Console.WriteLine("Ці точки не утворюють опуклий чотирикутник (колінеарні або ребра перетинаються). Спробуйте ще раз.");
-                        continue;
-                    }
-
-                    // Перевіримо ненульову площу (оброблено у hull.Count != 4, але додатково чітко)
-                    double area = PolygonArea(hull);
-                    if (Math.Abs(area) < EPS)
-                    {
-                        Console.WriteLine("Площа дуже мала (вироджений полігон). Спробуйте інші точки.");
-                        continue;
-                    }
-
-                    // Все добре — додамо квад
-                    quadrilaterals.Add(new ConvexQuadrilateral(hull));
-                    break;
-                }
+                cross[i] = abx * bcy - aby * bcx;
             }
 
-            if (quadrilaterals.Count == 0)
+            bool hasPositive = cross.Any(v => v > 1e-9);
+            bool hasNegative = cross.Any(v => v < -1e-9);
+            bool hasZero = cross.Any(v => Math.Abs(v) <= 1e-9);
+
+            if (hasZero) return false;
+            return !(hasPositive && hasNegative);
+        }
+
+        public override string ToString()
+        {
+            return $"Vertices: {string.Join(", ", _vertices.Select(v => v.ToString()))}, Perimeter = {Perimeter:F3}";
+        }
+    }
+
+    public static class Program
+    {
+        public static void Main()
+        {
+            RunManualTests();
+
+            Console.WriteLine("\nВведіть n (кількість чотирикутників):");
+            if (!int.TryParse(Console.ReadLine(), out int n) || n <= 0)
             {
-                Console.WriteLine("Жодного валідного чотирикутника не введено.");
+                Console.WriteLine("Помилка: потрібно ввести додатне ціле число.");
                 return;
             }
 
-            // Знаходження максимального периметра
-            double maxP = double.MinValue;
-            int idx = -1;
-            for (int i = 0; i < quadrilaterals.Count; i++)
+            var quads = new List<ConvexQuadrilateral>();
+            var culture = CultureInfo.InvariantCulture;
+
+            for (int i = 0; i < n; i++)
             {
-                double p = quadrilaterals[i].Perimeter();
-                Console.WriteLine($"Периметр чотирикутника #{i + 1} = {p:F4}");
-                if (p > maxP)
+                Console.WriteLine($"\nЧотирикутник #{i + 1}: введіть 4 вершини (x y):");
+                var points = new Point[4];
+
+                for (int j = 0; j < 4; j++)
                 {
-                    maxP = p;
-                    idx = i;
+                    Console.Write($"Вершина {j + 1}: ");
+                    string? input = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        Console.WriteLine("Помилка: порожній рядок.");
+                        j--;
+                        continue;
+                    }
+
+                    var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length != 2 ||
+                        !double.TryParse(parts[0], NumberStyles.Float, culture, out double x) ||
+                        !double.TryParse(parts[1], NumberStyles.Float, culture, out double y))
+                    {
+                        Console.WriteLine("Помилка формату. Введіть два числа через пробіл.");
+                        j--;
+                        continue;
+                    }
+
+                    points[j] = new Point(x, y);
+                }
+
+                try
+                {
+                    var quad = new ConvexQuadrilateral(points);
+                    quads.Add(quad);
+                    Console.WriteLine("✅ Додано: " + quad);
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine("❌ " + ex.Message);
                 }
             }
 
-            Console.WriteLine("\nЧотирикутник з найбільшим периметром:");
-            Console.WriteLine($"№{idx + 1}: {quadrilaterals[idx]}");
-            Console.WriteLine($"Максимальний периметр = {maxP:F4}");
-        }
-
-        static int ReadPositiveInt(string prompt)
-        {
-            while (true)
+            if (quads.Count == 0)
             {
-                Console.Write(prompt);
-                string s = Console.ReadLine();
-                if (int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) && n > 0)
-                    return n;
-                Console.WriteLine("Невірне ціле число (>0). Спробуйте ще раз.");
-            }
-        }
-
-        static bool TryParsePoint(string line, out Point p)
-        {
-            p = null;
-            if (string.IsNullOrWhiteSpace(line)) return false;
-            var parts = line.Trim()
-                            .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2) return false;
-            if (!double.TryParse(parts[0], NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double x))
-                return false;
-            if (!double.TryParse(parts[1], NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double y))
-                return false;
-            p = new Point(x, y);
-            return true;
-        }
-
-        static bool HasDuplicatePoints(List<Point> pts)
-        {
-            for (int i = 0; i < pts.Count; i++)
-                for (int j = i + 1; j < pts.Count; j++)
-                    if (Math.Abs(pts[i].X - pts[j].X) < EPS && Math.Abs(pts[i].Y - pts[j].Y) < EPS)
-                        return true;
-            return false;
-        }
-
-        // Andrew's monotone chain convex hull (returns CCW, no duplicate of first at end).
-        static List<Point> ConvexHull(List<Point> pts)
-        {
-            var points = pts.OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
-            if (points.Count <= 1) return new List<Point>(points);
-
-            List<Point> lower = new List<Point>();
-            foreach (var p in points)
-            {
-                while (lower.Count >= 2 && Cross(lower[lower.Count - 2], lower[lower.Count - 1], p) <= EPS)
-                    lower.RemoveAt(lower.Count - 1);
-                lower.Add(p);
+                Console.WriteLine("\nНе знайдено жодного валідного опуклого чотирикутника.");
+                return;
             }
 
-            List<Point> upper = new List<Point>();
-            for (int i = points.Count - 1; i >= 0; i--)
-            {
-                var p = points[i];
-                while (upper.Count >= 2 && Cross(upper[upper.Count - 2], upper[upper.Count - 1], p) <= EPS)
-                    upper.RemoveAt(upper.Count - 1);
-                upper.Add(p);
-            }
-
-            // З'єднати, але уникнути повторення крайніх точок
-            lower.RemoveAt(lower.Count - 1);
-            upper.RemoveAt(upper.Count - 1);
-            var hull = new List<Point>();
-            hull.AddRange(lower);
-            hull.AddRange(upper);
-
-            // Якщо всі точки колінеарні — hull може містити менше точок
-            return hull;
+            var maxQuad = quads.OrderByDescending(q => q.Perimeter).First();
+            Console.WriteLine($"\n🏆 Найбільший периметр: {maxQuad.Perimeter:F3}");
+            Console.WriteLine(maxQuad);
         }
 
-        // векторний добуток (O->A) x (O->B)
-        static double Cross(Point O, Point A, Point B)
+        private static void RunManualTests()
         {
-            return (A.X - O.X) * (B.Y - O.Y) - (A.Y - O.Y) * (B.X - O.X);
-        }
+            Console.WriteLine("=== Ручні тести ===");
 
-        // площа полігону через формулу Гауса (може бути додатною/від'ємною залежно від орієнтації).
-        static double PolygonArea(IList<Point> pts)
-        {
-            double s = 0;
-            for (int i = 0; i < pts.Count; i++)
+            try
             {
-                var a = pts[i];
-                var b = pts[(i + 1) % pts.Count];
-                s += a.X * b.Y - a.Y * b.X;
+                var q1 = new ConvexQuadrilateral(new[]
+                {
+                    new Point(0, 0),
+                    new Point(2, 0),
+                    new Point(2, 2),
+                    new Point(0, 2)
+                });
+                Console.WriteLine("Test 1 (OK): " + q1);
             }
-            return Math.Abs(s) * 0.5;
+            catch (Exception e)
+            {
+                Console.WriteLine("Test 1 (FAIL): " + e.Message);
+            }
+
+            try
+            {
+                var q2 = new ConvexQuadrilateral(new[]
+                {
+                    new Point(0,0),
+                    new Point(1,0),
+                    new Point(2,0),
+                    new Point(0,1)
+                });
+                Console.WriteLine("Test 2 (FAIL expected): " + q2);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Test 2 (OK, fail expected): " + e.Message);
+            }
+
+            try
+            {
+                var q3 = new ConvexQuadrilateral(new[]
+                {
+                    new Point(0,0),
+                    new Point(1,0),
+                    new Point(1,0),
+                    new Point(0,1)
+                });
+                Console.WriteLine("Test 3 (FAIL expected): " + q3);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Test 3 (OK, fail expected): " + e.Message);
+            }
         }
     }
 }

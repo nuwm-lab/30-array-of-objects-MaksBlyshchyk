@@ -11,7 +11,7 @@ class Point
         Y = y;
     }
 
-    // Відстань між двома точками
+    // Відстань між двома точками.
     public double DistanceTo(Point p)
     {
         double dx = X - p.X;
